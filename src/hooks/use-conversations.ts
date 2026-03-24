@@ -25,7 +25,7 @@ export function useConversations({}: UseConversationsProps) {
   const loadConversations = useCallback(async () => {
     try {
       setLoading(true)
-      const data = await realtimeClient.getConversations()
+      const data = await realtimeClient.getConversations('default')
       setConversations(data)
       setError(null)
     } catch (err) {
@@ -88,6 +88,7 @@ export function useConversations({}: UseConversationsProps) {
 
   // Configurar suscripciones en tiempo real
   useEffect(() => {
+    const subAccountId = 'default' // TODO: get from auth context
     if (!subAccountId) return
 
     // Suscripción a conversaciones
@@ -111,7 +112,7 @@ export function useConversations({}: UseConversationsProps) {
     return () => {
       realtimeClient.unsubscribe(`conversations:${subAccountId}`)
     }
-  }, [subAccountId])
+  }, [])
 
   // Suscripción a mensajes de conversación seleccionada
   useEffect(() => {

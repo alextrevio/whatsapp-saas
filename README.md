@@ -1,158 +1,158 @@
-# WhatsApp SaaS Platform
+# WhatsApp SaaS - Plataforma de Uso Interno
 
-Una plataforma completa de automatización de WhatsApp para agencias de marketing. Clon funcional de GoGHL.ai construido con Next.js 14 y Supabase.
+Plataforma de gestión de WhatsApp para uso interno - simplificada y enfocada en funcionalidad core.
 
-## 🚀 Stack Tecnológico
+## 🚀 Características
 
-- **Frontend**: Next.js 14 App Router, TypeScript, Tailwind CSS
-- **UI**: shadcn/ui components
-- **Base de datos**: Supabase (PostgreSQL)
-- **Autenticación**: Supabase Auth
+### 📱 WhatsApp Management
+- **Sesiones WhatsApp**: Gestión de múltiples conexiones
+- **Inbox en tiempo real**: Mensajes entrantes y salientes
+- **QR Code authentication**: Conexión segura de dispositivos
+
+### 👥 Gestión de Contactos  
+- **Base de datos centralizada**: Todos tus contactos organizados
+- **Importación CSV**: Carga masiva de contactos
+- **Sistema de tags**: Categorización flexible
+
+### 📢 Campañas de Mensajería
+- **Envíos masivos**: Campañas a múltiples contactos
+- **Programación**: Mensajes programados
+- **Tracking**: Seguimiento de entregas
+
+### ⚙️ Configuración
+- **Configuración personal**: Ajustes de perfil
+- **Parámetros WhatsApp**: Timeouts y delays
+- **API interna**: Token para integraciones
+- **Notificaciones**: Webhooks y emails
+
+## 🛠 Stack Técnico
+
+- **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
+- **Backend**: API Routes + Supabase
+- **Base de datos**: PostgreSQL (Supabase)
 - **WhatsApp**: whatsapp-web.js
-- **Pagos**: Stripe
-- **AI**: OpenAI API, ElevenLabs
+- **UI**: shadcn/ui + Radix UI
+- **Autenticación**: Supabase Auth
 
-## 🏗️ Arquitectura
-
-### Fases de Desarrollo
-
-#### ✅ FASE 1 - CORE (Completada)
-- [x] Autenticación Supabase (login/register/OAuth)
-- [x] Sistema multi-tenant (organizaciones)
-- [x] Dashboard con layout responsive
-- [x] Gestión de sesiones WhatsApp
-- [x] Dark mode y temas
-- [x] Componentes UI base
-
-#### 🔧 FASE 2 - FEATURES (En desarrollo)
-- [ ] Gestión de contactos (CSV import, tags)
-- [ ] Sistema de campañas (bulk, spintax, drip)
-- [ ] Auto-respuesta AI con ChatGPT
-- [ ] Builder de botones y listas
-- [ ] Notas de voz (ElevenLabs + Whisper)
-- [ ] Configuración de proxy SOCKS5
-
-#### 💰 FASE 3 - BUSINESS (Pendiente)
-- [ ] Integración con Stripe
-- [ ] Sistema white-label
-- [ ] REST API + API keys
-- [ ] Dashboard para agencias
-- [ ] Webhooks con N8N
-
-#### 📱 FASE 4 - LANDING (Pendiente)
-- [ ] Landing page estilo GoGHL.ai
-- [ ] Pricing con toggle
-- [ ] Centro de ayuda
-- [ ] Blog y SEO
-
-## 🗄️ Base de Datos
-
-### Tablas Principales
-
-- `organizations` - Multi-tenant, planes, Stripe
-- `sub_accounts` - Sub-cuentas por organización
-- `whatsapp_sessions` - Sesiones WhatsApp (QR, proxy, estado)
-- `contacts` - Contactos con tags y campos personalizados
-- `conversations` - Conversaciones en tiempo real
-- `messages` - Mensajes (texto/imagen/video/audio/botones/listas)
-
-## 🚦 Empezar
-
-### Prerrequisitos
-
-- Node.js 18+
-- npm o yarn
-- Cuenta de Supabase
-- Cuenta de OpenAI (opcional)
-- Cuenta de Stripe (para pagos)
-
-### Instalación
+## 📦 Instalación
 
 ```bash
 # Clonar repositorio
-git clone https://github.com/alextrevio/whatsapp-saas
-cd whatsapp-saas
+git clone [repo]
 
 # Instalar dependencias
 npm install
 
 # Configurar variables de entorno
 cp .env.example .env.local
-# Editar .env.local con tus credenciales
 
 # Ejecutar en desarrollo
 npm run dev
+
+# Build para producción
+npm run build
 ```
+
+## 🔧 Configuración
 
 ### Variables de Entorno
 
-```env
+```bash
 # Supabase
-NEXT_PUBLIC_SUPABASE_URL=tu_url_de_supabase
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_clave_anon_supabase
-SUPABASE_SERVICE_ROLE_KEY=tu_clave_service_role
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_key
 
-# OpenAI (opcional)
-OPENAI_API_KEY=tu_clave_openai
-
-# ElevenLabs (opcional)
-ELEVENLABS_API_KEY=tu_clave_elevenlabs
-
-# Stripe (para pagos)
-STRIPE_PUBLISHABLE_KEY=tu_clave_publica_stripe
-STRIPE_SECRET_KEY=tu_clave_secreta_stripe
+# NextAuth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_secret
 ```
 
-## 🧪 Testing
+## 📁 Estructura del Proyecto
+
+```
+src/
+├── app/
+│   ├── (auth)/              # Login/Register
+│   ├── (dashboard)/         # Dashboard principal
+│   └── api/whatsapp/        # APIs de WhatsApp
+├── components/
+│   ├── dashboard/           # Componentes del dashboard
+│   └── ui/                  # Componentes base (shadcn/ui)
+├── hooks/                   # Hooks personalizados
+├── lib/                     # Utilidades y configuración
+└── types/                   # Tipos TypeScript
+```
+
+## 🔐 Funcionalidades
+
+### Dashboard Principal
+- Vista general de estadísticas
+- Actividad reciente
+- Acceso rápido a funciones
+
+### WhatsApp Sessions
+- Conectar múltiples dispositivos WhatsApp
+- Monitoreo de estado de conexión
+- QR Code para autenticación
+
+### Inbox
+- Chat interface en tiempo real
+- Historial de conversaciones
+- Respuestas rápidas
+
+### Contactos
+- Lista completa de contactos
+- Búsqueda y filtrado
+- Importación desde CSV
+- Sistema de etiquetas
+
+### Campañas
+- Crear campañas de mensajes
+- Selección de audiencia
+- Programación de envíos
+- Métricas de entrega
+
+## 🚀 Deployment
+
+### Vercel (Recomendado)
+```bash
+# Deploy con Vercel CLI
+vercel --prod
+
+# O conectar repositorio GitHub en vercel.com
+```
+
+### Variables de Entorno en Producción
+- Configurar todas las variables en Vercel Dashboard
+- Asegurar que Supabase tenga la URL correcta
+- Verificar WhatsApp web connection en producción
+
+## 📊 Métricas del Build
+
+- **Páginas generadas**: 14
+- **Bundle size**: ~87KB shared
+- **Rutas API**: 3 (todas WhatsApp)
+- **Componentes**: Optimizados para producción
+
+## 🔧 Desarrollo
 
 ```bash
-# Tests unitarios
-npm run test
+# Ejecutar tests
+npm test
 
-# Tests con watch
-npm run test:watch
+# Linting
+npm run lint
 
 # Type checking
 npm run type-check
+
+# Build local
+npm run build && npm start
 ```
-
-## 🚀 Deploy
-
-### Vercel (Recomendado)
-
-```bash
-# Deploy automático conectando repositorio GitHub
-# Las variables de entorno se configuran en el dashboard de Vercel
-```
-
-### Docker
-
-```bash
-# Build de la imagen
-docker build -t whatsapp-saas .
-
-# Ejecutar contenedor
-docker run -p 3000:3000 whatsapp-saas
-```
-
-## 📝 Contribuir
-
-1. Fork del proyecto
-2. Crear rama feature (`git checkout -b feature/nueva-caracteristica`)
-3. Commit cambios (`git commit -m 'feat: agregar nueva característica'`)
-4. Push a la rama (`git push origin feature/nueva-caracteristica`)
-5. Abrir Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
-
-## 🤝 Soporte
-
-- 📧 Email: soporte@whatsappsaas.com
-- 💬 Discord: [Server de la comunidad]
-- 📚 Documentación: [docs.whatsappsaas.com]
 
 ---
 
-**Desarrollado con ❤️ por Atlas - Orquestador de Desarrollo**
+**Versión**: 1.0.0 - Uso Interno  
+**Última actualización**: 2024-03-24  
+**Desarrollado por**: Atlas 🏗️

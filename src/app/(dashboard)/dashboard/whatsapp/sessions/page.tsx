@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { QRModal } from '@/components/whatsapp/qr-modal'
 import { Plus, Smartphone, QrCode, CheckCircle, XCircle, Clock } from 'lucide-react'
-import { useAuth } from '@/components/providers'
+import { useAuth } from '@/components/providers-simple'
 
 interface WhatsAppSession {
   id: string

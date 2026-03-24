@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { whatsappManager } from '@/lib/whatsapp'
 
 export async function GET(
@@ -30,7 +30,7 @@ export async function GET(
 
     // Agregar información en tiempo real
     const sessionData = {
-      ...whatsappSession,
+      ...(whatsappSession as any),
       realTimeStatus: whatsappManager.getSessionStatus(sessionId),
       qrCode: whatsappManager.getSessionQR(sessionId)
     }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { whatsappManager } from '@/lib/whatsapp'
 import { sendMessageSchema } from '@/lib/validations'
 
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!conversation.whatsapp_sessions || !conversation.contacts) {
+    if (!(conversation as any).whatsapp_sessions || !(conversation as any).contacts) {
       return NextResponse.json(
         { error: 'Invalid conversation data' },
         { status: 400 }
@@ -44,8 +44,8 @@ export async function POST(request: NextRequest) {
 
     // Enviar mensaje via WhatsApp
     const success = await whatsappManager.sendMessage(
-      conversation.whatsapp_sessions.id,
-      conversation.contacts.phone_number,
+      (conversation as any).whatsapp_sessions.id,
+      (conversation as any).contacts.phone_number,
       validatedData.content,
       validatedData.mediaUrl
     )
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Guardar mensaje en base de datos
-    const { data: message, error: msgError } = await supabase
+    const { data: message, error: msgError } = await (supabase as any)
       .from('messages')
       .insert({
         conversation_id: validatedData.conversationId,
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Actualizar conversación
-    await supabase
+    await (supabase as any)
       .from('conversations')
       .update({ 
         last_message_at: new Date().toISOString(),

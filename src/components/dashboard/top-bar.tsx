@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/components/providers'
+import { useAuth } from '@/components/providers-simple'
 import { Button } from '@/components/ui/button'
 import { Menu, Bell, Moon, Sun, User, LogOut } from 'lucide-react'
 import { useTheme } from 'next-themes'

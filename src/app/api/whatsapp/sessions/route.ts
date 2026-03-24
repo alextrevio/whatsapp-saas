@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { whatsappManager } from '@/lib/whatsapp'
 import { createWhatsAppSessionSchema } from '@/lib/validations'
 
@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
 
     // Agregar estado en tiempo real
     const sessionsWithStatus = sessions?.map(session => ({
-      ...session,
-      realTimeStatus: whatsappManager.getSessionStatus(session.id)
+      ...(session as any),
+      realTimeStatus: whatsappManager.getSessionStatus((session as any).id)
     })) || []
 
     return NextResponse.json({ sessions: sessionsWithStatus })
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const validatedData = createWhatsAppSessionSchema.parse(body)
 
     // Crear sesión en base de datos
-    const { data: whatsappSession, error } = await supabase
+    const { data: whatsappSession, error } = await (supabase as any)
       .from('whatsapp_sessions')
       .insert({
         user_id: session.user.id, // Usuario actual

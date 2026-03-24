@@ -294,16 +294,16 @@ export default function ImportContactsPage() {
                                 {contact.phone_number}
                               </p>
                             </div>
-                            {contact.tags && contact.tags.length > 0 && (
+                            {contact.tags && Array.isArray(contact.tags) && contact.tags.length > 0 && (
                               <div className="flex space-x-1">
-                                {contact.tags.slice(0, 2).map((tag: string) => (
+                                {(contact.tags as string[]).slice(0, 2).map((tag: string) => (
                                   <Badge key={tag} variant="secondary">
                                     {tag}
                                   </Badge>
                                 ))}
-                                {contact.tags.length > 2 && (
+                                {(contact.tags as string[]).length > 2 && (
                                   <Badge variant="secondary">
-                                    +{contact.tags.length - 2}
+                                    +{(contact.tags as string[]).length - 2}
                                   </Badge>
                                 )}
                               </div>

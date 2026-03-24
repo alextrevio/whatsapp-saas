@@ -1,6 +1,8 @@
 import { Client, LocalAuth, MessageMedia } from 'whatsapp-web.js'
 import qrcode from 'qrcode-terminal'
-import { supabaseAdmin } from './supabase'
+import { supabaseAdmin } from './supabase-admin'
+import { WhatsAppBotEngine, DEFAULT_PERSONALITIES } from './openai'
+import { automationEngine } from './automation-engine'
 import fs from 'fs/promises'
 import path from 'path'
 
@@ -16,6 +18,8 @@ export class WhatsAppManager {
   private static instance: WhatsAppManager
   private sessions: Map<string, WhatsAppSession> = new Map()
   private readonly SESSION_DIR = './whatsapp-sessions'
+  private botEngines: Map<string, WhatsAppBotEngine> = new Map()
+  private botSettings: Map<string, { enabled: boolean, personalityId: string, autoReply: boolean }> = new Map()
 
   static getInstance(): WhatsAppManager {
     if (!WhatsAppManager.instance) {
@@ -122,7 +126,7 @@ export class WhatsAppManager {
       })
 
       client.on('message', async (message) => {
-        await this.handleIncomingMessage(sessionId, subAccountId, message)
+        await this.handleIncomingMessage(sessionId, 'default', message)
       })
 
       // Inicializar cliente
@@ -238,20 +242,21 @@ export class WhatsAppManager {
       // Buscar o crear contacto
       let { data: contactData } = await supabaseAdmin
         .from('contacts')
-        .select('id')
+        .select('*')
         .eq('phone_number', phoneNumber)
         .single()
 
       if (!contactData) {
-        const { data: newContact } = await supabaseAdmin
+        const { data: newContact } = await (supabaseAdmin as any)
           .from('contacts')
           .insert({
             phone_number: phoneNumber,
-            name: contact.pushname || contact.name,
-            tags: [],
-            custom_fields: {}
+            name: contact.pushname || contact.name || 'Sin nombre',
+            tags: ['nuevo'],
+            custom_fields: {},
+            lead_score: 0
           })
-          .select('id')
+          .select('*')
           .single()
 
         contactData = newContact
@@ -265,19 +270,19 @@ export class WhatsAppManager {
       // Buscar o crear conversación
       let { data: conversation } = await supabaseAdmin
         .from('conversations')
-        .select('id')
-        .eq('contact_id', contactData.id)
+        .select('*')
+        .eq('contact_id', (contactData as any).id)
         .single()
 
       if (!conversation) {
-        const { data: newConversation } = await supabaseAdmin
+        const { data: newConversation } = await (supabaseAdmin as any)
           .from('conversations')
           .insert({
-            contact_id: contactData.id,
+            contact_id: (contactData as any).id,
             whatsapp_session_id: sessionId,
             status: 'open'
           })
-          .select('id')
+          .select('*')
           .single()
 
         conversation = newConversation
@@ -295,17 +300,16 @@ export class WhatsAppManager {
 
       if (message.hasMedia) {
         const media = await message.downloadMedia()
-        // En producción, subirías el media a storage y guardarías la URL
         messageType = message.type
         mediaUrl = `data:${media.mimetype};base64,${media.data}`
         content = message.body || `[${messageType.toUpperCase()}]`
       }
 
-      // Guardar mensaje
-      await supabaseAdmin
+      // Guardar mensaje del contacto
+      await (supabaseAdmin as any)
         .from('messages')
         .insert({
-          conversation_id: conversation.id,
+          conversation_id: (conversation as any).id,
           sender_type: 'contact',
           message_type: messageType,
           content,
@@ -313,23 +317,202 @@ export class WhatsAppManager {
           whatsapp_message_id: message.id._serialized
         })
 
-      // Actualizar última actividad de conversación
-      await supabaseAdmin
+      // 🤖 PROCESAMIENTO INTELIGENTE
+      await this.processIntelligentResponse(
+        sessionId,
+        (contactData as any).id,
+        (conversation as any).id,
+        content,
+        contactData as any,
+        phoneNumber
+      )
+
+      // ⚡ TRIGGERS DE AUTOMATIZACIÓN
+      await automationEngine.processIncomingMessage(
+        (contactData as any).id,
+        content,
+        (conversation as any).id,
+        sessionId
+      )
+
+      // Actualizar última actividad
+      await (supabaseAdmin as any)
         .from('conversations')
         .update({ 
           last_message_at: new Date().toISOString(),
           status: 'open'
         })
-        .eq('id', conversation.id)
+        .eq('id', (conversation as any).id)
 
-      console.log('Message saved:', {
+      console.log('✅ Message processed with AI:', {
         from: phoneNumber,
-        type: messageType,
         content: content.substring(0, 50) + '...'
       })
 
     } catch (error) {
       console.error('Error handling incoming message:', error)
+    }
+  }
+
+  // 🤖 PROCESAMIENTO INTELIGENTE DE RESPUESTAS
+  private async processIntelligentResponse(
+    sessionId: string,
+    contactId: string,
+    conversationId: string,
+    message: string,
+    contact: any,
+    phoneNumber: string
+  ): Promise<void> {
+    try {
+      // Verificar si el bot está habilitado para esta sesión
+      const botSettings = this.botSettings.get(sessionId)
+      if (!botSettings?.enabled) {
+        console.log('Bot disabled for session:', sessionId)
+        return
+      }
+
+      // Obtener o crear bot engine
+      let botEngine = this.botEngines.get(sessionId)
+      if (!botEngine) {
+        const personality = DEFAULT_PERSONALITIES.find(p => p.id === botSettings.personalityId) || DEFAULT_PERSONALITIES[0]
+        botEngine = new WhatsAppBotEngine(personality)
+        this.botEngines.set(sessionId, botEngine)
+      }
+
+      // Verificar si el usuario quiere hablar con humano
+      if (botEngine.detectHumanHandoff(message)) {
+        await this.transferToHuman(conversationId, contactId)
+        return
+      }
+
+      // Construir contexto de conversación
+      const conversationHistory = await this.getConversationHistory(conversationId)
+      const context = {
+        contactName: contact.name,
+        contactPhone: phoneNumber,
+        conversationHistory,
+        tags: contact.tags || [],
+        lastActivity: new Date().toISOString(),
+        leadScore: contact.lead_score || 0
+      }
+
+      // Generar respuesta inteligente
+      const response = await botEngine.generateResponse(message, context)
+      
+      if (response && response.trim()) {
+        // Enviar respuesta automática
+        await this.sendMessage(sessionId, phoneNumber, response)
+        
+        // Guardar respuesta del bot
+        await (supabaseAdmin as any)
+          .from('messages')
+          .insert({
+            conversation_id: conversationId,
+            sender_type: 'bot',
+            message_type: 'text',
+            content: response,
+            metadata: { 
+              automated: true,
+              personality: botSettings.personalityId,
+              intent: botEngine.detectIntent(message)
+            }
+          })
+
+        // Actualizar lead score basado en intent
+        const intent = botEngine.detectIntent(message)
+        let scoreChange = 0
+        
+        switch (intent) {
+          case 'interest': scoreChange = 10; break
+          case 'question': scoreChange = 5; break
+          case 'greeting': scoreChange = 2; break
+          case 'complaint': scoreChange = -5; break
+        }
+
+        if (scoreChange !== 0) {
+          const newScore = Math.max(0, Math.min(100, (contact.lead_score || 0) + scoreChange))
+          await (supabaseAdmin as any)
+            .from('contacts')
+            .update({ lead_score: newScore })
+            .eq('id', contactId)
+        }
+
+        console.log(`🤖 Bot responded: "${response.substring(0, 50)}..." | Intent: ${intent} | Score: +${scoreChange}`)
+      }
+
+    } catch (error) {
+      console.error('Error in intelligent processing:', error)
+    }
+  }
+
+  private async getConversationHistory(conversationId: string) {
+    const { data } = await supabaseAdmin
+      .from('messages')
+      .select('sender_type, content, created_at')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: false })
+      .limit(20)
+
+    return (data || []).reverse().map((msg: any) => ({
+      role: (msg.sender_type === 'contact' ? 'user' : 'assistant') as 'user' | 'assistant',
+      content: String(msg.content || ''),
+      timestamp: String(msg.created_at || '')
+    }))
+  }
+
+  private async transferToHuman(conversationId: string, contactId: string): Promise<void> {
+    // Marcar conversación para atención humana
+    await (supabaseAdmin as any)
+      .from('conversations')
+      .update({ 
+        status: 'needs_human',
+        human_handoff_requested: true
+      })
+      .eq('id', conversationId)
+
+    // Agregar tag de seguimiento
+    const { data: contact } = await supabaseAdmin
+      .from('contacts')
+      .select('tags')
+      .eq('id', contactId)
+      .single()
+
+    if (contact) {
+      const tags = [...(contact as any).tags, 'needs_human']
+      await (supabaseAdmin as any)
+        .from('contacts')
+        .update({ tags })
+        .eq('id', contactId)
+    }
+
+    console.log(`👨‍💼 Human handoff requested for contact: ${contactId}`)
+  }
+
+  // API PÚBLICA PARA CONFIGURAR BOTS
+  enableBot(sessionId: string, personalityId: string = 'friendly', autoReply: boolean = true): void {
+    this.botSettings.set(sessionId, {
+      enabled: true,
+      personalityId,
+      autoReply
+    })
+    console.log(`🤖 Bot enabled for session ${sessionId} with personality: ${personalityId}`)
+  }
+
+  disableBot(sessionId: string): void {
+    this.botSettings.set(sessionId, {
+      enabled: false,
+      personalityId: 'friendly',
+      autoReply: false
+    })
+    this.botEngines.delete(sessionId)
+    console.log(`🤖 Bot disabled for session ${sessionId}`)
+  }
+
+  getBotStatus(sessionId: string): { enabled: boolean, personality: string } {
+    const settings = this.botSettings.get(sessionId)
+    return {
+      enabled: settings?.enabled || false,
+      personality: settings?.personalityId || 'none'
     }
   }
 
@@ -348,7 +531,7 @@ export class WhatsAppManager {
         updateData.phone_number = phoneNumber
       }
 
-      await supabaseAdmin
+      await (supabaseAdmin as any)
         .from('whatsapp_sessions')
         .update(updateData)
         .eq('id', sessionId)
@@ -360,7 +543,7 @@ export class WhatsAppManager {
 
   private async updateSessionQR(sessionId: string, qrCode: string): Promise<void> {
     try {
-      await supabaseAdmin
+      await (supabaseAdmin as any)
         .from('whatsapp_sessions')
         .update({ 
           qr_code: qrCode,
@@ -375,3 +558,8 @@ export class WhatsAppManager {
 }
 
 export const whatsappManager = WhatsAppManager.getInstance()
+
+// Hacer disponible globalmente para las automatizaciones
+if (typeof global !== 'undefined') {
+  ;(global as any).whatsappManager = whatsappManager
+}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/components/providers'
+import { useAuth } from '@/components/providers-simple'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Sidebar } from '@/components/dashboard/sidebar'

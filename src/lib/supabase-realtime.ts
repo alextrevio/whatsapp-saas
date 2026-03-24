@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { supabase } from './supabase-client'
 import type { Database } from '@/types/database.types'
 
 type Message = Database['public']['Tables']['messages']['Row']
@@ -151,7 +151,7 @@ export class SupabaseRealtime {
     messageType: Message['message_type'] = 'text',
     mediaUrl?: string
   ): Promise<Message | null> {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('messages')
       .insert({
         conversation_id: conversationId,
