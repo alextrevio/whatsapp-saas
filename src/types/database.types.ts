@@ -89,6 +89,44 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['messages']['Row'], 'id' | 'created_at'>
         Update: Partial<Database['public']['Tables']['messages']['Insert']>
       }
+      api_keys: {
+        Row: {
+          id: string
+          organization_id: string
+          name: string
+          key: string
+          prefix: string
+          permissions: string[]
+          last_used_at: string | null
+          expires_at: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['api_keys']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Database['public']['Tables']['api_keys']['Insert']>
+      }
+      campaigns: {
+        Row: {
+          id: string
+          sub_account_id: string
+          name: string
+          message: string
+          status: 'draft' | 'scheduled' | 'running' | 'completed' | 'paused'
+          target_tags: string[]
+          scheduled_at: string | null
+          completed_at: string | null
+          total_contacts: number
+          sent_count: number
+          delivered_count: number
+          read_count: number
+          failed_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['campaigns']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Database['public']['Tables']['campaigns']['Insert']>
+      }
     }
     Views: {
       [_ in never]: never
