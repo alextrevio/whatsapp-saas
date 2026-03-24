@@ -10,20 +10,16 @@ import {
   Home,
   Users,
   Send,
-  Building2,
   Zap,
   Settings,
-  Phone,
   BarChart3,
   X,
   ChevronDown,
-  Rocket,
+  ChevronRight,
   Bot,
-  Sparkles,
-  Crown,
-  Orbit,
-  Shield,
-  Star
+  Inbox,
+  Plus,
+  Search
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -32,62 +28,50 @@ interface SidebarProps {
 }
 
 const navigation = [
-  { 
-    name: 'Command Center', 
-    href: '/dashboard', 
-    icon: Home, 
-    color: 'from-emerald-500 to-teal-500',
-    premium: false
+  {
+    name: 'Overview',
+    href: '/dashboard',
+    icon: Home,
   },
-  { 
-    name: 'WhatsApp Core',
+  {
+    name: 'Conversations',
     icon: MessageCircle,
-    color: 'from-green-500 to-emerald-500',
-    premium: false,
     children: [
-      { name: 'Sessions', href: '/dashboard/whatsapp/sessions', icon: Shield },
-      { name: 'Inbox', href: '/dashboard/whatsapp/inbox', icon: MessageCircle },
-      { name: 'AI Bots', href: '/dashboard/whatsapp/bots', icon: Bot, premium: true },
+      { name: 'Inbox', href: '/dashboard/whatsapp/inbox', icon: Inbox },
+      { name: 'Sessions', href: '/dashboard/whatsapp/sessions', icon: MessageCircle },
+      { name: 'AI Bots', href: '/dashboard/whatsapp/bots', icon: Bot },
     ]
   },
   {
-    name: 'Contacts Hub',
+    name: 'Contacts',
+    href: '/dashboard/contacts',
     icon: Users,
-    color: 'from-blue-500 to-cyan-500',
-    premium: false,
-    children: [
-      { name: 'Contact List', href: '/dashboard/contacts', icon: Users },
-      { name: 'CSV Import', href: '/dashboard/contacts/import', icon: Zap },
-    ]
   },
   {
     name: 'Campaigns',
+    href: '/dashboard/campaigns', 
     icon: Send,
-    color: 'from-purple-500 to-pink-500',
-    premium: false,
-    children: [
-      { name: 'All Campaigns', href: '/dashboard/campaigns', icon: Send },
-    ]
+  },
+  {
+    name: 'Analytics',
+    href: '/dashboard/analytics',
+    icon: BarChart3,
   },
   {
     name: 'Automation',
     href: '/dashboard/automation',
     icon: Zap,
-    color: 'from-orange-500 to-red-500',
-    premium: true
   },
   {
     name: 'Settings',
-    icon: Settings,
     href: '/dashboard/settings',
-    color: 'from-gray-500 to-slate-500',
-    premium: false
+    icon: Settings,
   },
 ]
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
-  const [expandedItems, setExpandedItems] = useState<string[]>(['WhatsApp Core'])
+  const [expandedItems, setExpandedItems] = useState<string[]>(['Conversations'])
 
   const toggleExpanded = (name: string) => {
     setExpandedItems(prev => 
@@ -97,229 +81,147 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     )
   }
 
+  const isItemActive = (href: string) => pathname === href
+  const isParentActive = (children?: { href: string }[]) => 
+    children?.some(child => pathname === child.href)
+
   return (
     <>
-      {/* Mobile overlay with modern blur */}
+      {/* Mobile overlay */}
       {isOpen && (
-        <div className="fixed inset-0 flex z-40 lg:hidden">
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div className="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm" onClick={onClose} />
         </div>
       )}
 
-      {/* Futuristic Sidebar */}
+      {/* Sidebar */}
       <div className={cn(
-        "fixed inset-y-0 left-0 flex flex-col w-72 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 backdrop-blur-xl border-r border-slate-800/50 transform transition-all duration-300 ease-out z-50 shadow-2xl",
-        isOpen ? "translate-x-0" : "-translate-x-full",
-        "lg:translate-x-0 lg:static lg:inset-0"
+        "fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-zinc-950 border-r border-zinc-800/50 transition-transform duration-200 ease-in-out lg:translate-x-0",
+        isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        {/* Cyberpunk Header */}
-        <div className="relative overflow-hidden">
-          {/* Animated background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/20 via-blue-900/20 to-purple-900/20"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.1),transparent_70%)]"></div>
+        
+        {/* Header */}
+        <div className="flex h-16 items-center justify-between px-6 border-b border-zinc-800/50">
+          <div className="flex items-center space-x-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-500/10">
+              <MessageCircle className="h-4 w-4 text-emerald-500" />
+            </div>
+            <span className="text-sm font-semibold text-zinc-50">WhatsPower</span>
+          </div>
           
-          <div className="relative flex items-center justify-between h-20 px-6 border-b border-slate-800/50">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <div className="p-2.5 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg">
-                  <Rocket className="h-7 w-7 text-white" />
-                </div>
-                <div className="absolute -inset-1 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-xl opacity-20 blur animate-pulse"></div>
-              </div>
-              <div>
-                <div className="text-lg font-black text-white tracking-tight">
-                  WhatsPower
-                </div>
-                <div className="text-xs text-emerald-400 font-mono tracking-wider">
-                  v2.1.0 • ONLINE
-                </div>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="lg:hidden hover:bg-slate-800/50 text-slate-400 hover:text-white"
-            >
-              <X className="h-5 w-5" />
-            </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="lg:hidden h-8 w-8 p-0 text-zinc-400 hover:text-zinc-100"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Search */}
+        <div className="px-6 py-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+            <input
+              type="text"
+              placeholder="Search..."
+              className="w-full rounded-md border border-zinc-800/50 bg-zinc-900/20 py-2 pl-10 pr-4 text-sm text-zinc-50 placeholder:text-zinc-400 focus:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-700"
+            />
           </div>
         </div>
 
-        {/* User Status Card */}
-        <div className="p-4">
-          <div className="relative overflow-hidden bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-2xl p-4 border border-slate-700/50">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-blue-500/5"></div>
-            <div className="relative flex items-center space-x-3">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center">
-                  <Crown className="h-5 w-5 text-white" />
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-slate-900 animate-pulse"></div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold text-white">Alejandro</div>
-                <div className="text-xs text-slate-400 font-mono">Admin • Pro Plan</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Gaming-inspired Navigation */}
-        <nav className="flex-1 px-4 py-2 space-y-2 overflow-y-auto">
-          {navigation.map((item, index) => {
-            if (item.children) {
-              const isExpanded = expandedItems.includes(item.name)
-              const isActive = item.children.some(child => pathname === child.href)
-              
-              return (
-                <div key={item.name} className="space-y-1">
-                  <button
-                    onClick={() => toggleExpanded(item.name)}
-                    className={cn(
-                      "w-full flex items-center px-4 py-3 text-sm font-bold rounded-2xl group text-left transition-all duration-300 hover:-translate-y-0.5",
-                      isActive || isExpanded
-                        ? "bg-gradient-to-r bg-slate-800/80 text-white shadow-lg border border-slate-700/50"
-                        : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
-                    )}
-                  >
-                    <div className={`p-2.5 rounded-xl mr-3 transition-all duration-300 group-hover:scale-110 ${
-                      isActive || isExpanded
-                        ? `bg-gradient-to-br ${item.color} shadow-lg`
-                        : 'bg-slate-800/50'
-                    }`}>
-                      <item.icon className="h-5 w-5 text-white" />
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2">
-                        <span>{item.name}</span>
-                        {item.premium && (
-                          <div className="px-1.5 py-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 text-black text-xs font-black rounded-full">
-                            PRO
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <ChevronDown className={cn(
-                      "h-4 w-4 transition-all duration-300",
-                      isExpanded && "rotate-180"
-                    )} />
-                    
-                    {(isActive || isExpanded) && (
-                      <div className="absolute left-0 w-1 h-8 bg-gradient-to-b from-emerald-400 to-teal-500 rounded-r-full"></div>
-                    )}
-                  </button>
-                  
-                  {isExpanded && (
-                    <div className="ml-4 space-y-1 overflow-hidden">
-                      {item.children.map((child, childIndex) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className={cn(
-                            "flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group hover:-translate-y-0.5",
-                            pathname === child.href
-                              ? "bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400 border border-emerald-500/30"
-                              : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
-                          )}
-                        >
-                          <div className={`p-1.5 rounded-lg mr-3 transition-all duration-200 group-hover:scale-110 ${
-                            pathname === child.href
-                              ? 'bg-gradient-to-br from-emerald-500 to-teal-500'
-                              : 'bg-slate-700/50'
-                          }`}>
-                            <child.icon className="h-3.5 w-3.5 text-white" />
-                          </div>
-                          
-                          <span className="flex-1">{child.name}</span>
-                          
-                          {child.premium && (
-                            <Star className="h-3.5 w-3.5 text-yellow-400 fill-current" />
-                          )}
-                          
-                          {pathname === child.href && (
-                            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                          )}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )
-            }
-
-            const isActive = pathname === item.href
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "flex items-center px-4 py-3 text-sm font-bold rounded-2xl group transition-all duration-300 hover:-translate-y-0.5 relative",
-                  isActive
-                    ? "bg-gradient-to-r bg-slate-800/80 text-white shadow-lg border border-slate-700/50"
-                    : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
-                )}
-              >
-                <div className={`p-2.5 rounded-xl mr-3 transition-all duration-300 group-hover:scale-110 ${
-                  isActive
-                    ? `bg-gradient-to-br ${item.color} shadow-lg`
-                    : 'bg-slate-800/50'
-                }`}>
-                  <item.icon className="h-5 w-5 text-white" />
-                </div>
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="space-y-1">
+            {navigation.map((item) => {
+              if (item.children) {
+                const isExpanded = expandedItems.includes(item.name)
+                const isActive = isParentActive(item.children)
                 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2">
-                    <span>{item.name}</span>
-                    {item.premium && (
-                      <div className="px-1.5 py-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 text-black text-xs font-black rounded-full">
-                        PRO
+                return (
+                  <div key={item.name}>
+                    <button
+                      onClick={() => toggleExpanded(item.name)}
+                      className={cn(
+                        "flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                        isActive 
+                          ? "bg-zinc-800/50 text-zinc-50" 
+                          : "text-zinc-400 hover:text-zinc-50 hover:bg-zinc-800/25"
+                      )}
+                    >
+                      <item.icon className="mr-3 h-4 w-4" />
+                      <span className="flex-1 text-left">{item.name}</span>
+                      {isExpanded ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                    </button>
+                    
+                    {isExpanded && (
+                      <div className="ml-4 mt-1 space-y-1 border-l border-zinc-800/50 pl-4">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            className={cn(
+                              "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                              isItemActive(child.href)
+                                ? "bg-emerald-500/10 text-emerald-500"
+                                : "text-zinc-400 hover:text-zinc-50 hover:bg-zinc-800/25"
+                            )}
+                          >
+                            <child.icon className="mr-3 h-4 w-4" />
+                            {child.name}
+                          </Link>
+                        ))}
                       </div>
                     )}
                   </div>
-                </div>
-                
-                {isActive && (
-                  <>
-                    <div className="absolute left-0 w-1 h-8 bg-gradient-to-b from-emerald-400 to-teal-500 rounded-r-full"></div>
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                  </>
-                )}
-              </Link>
-            )
-          })}
+                )
+              }
+
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    isItemActive(item.href)
+                      ? "bg-emerald-500/10 text-emerald-500"
+                      : "text-zinc-400 hover:text-zinc-50 hover:bg-zinc-800/25"
+                  )}
+                >
+                  <item.icon className="mr-3 h-4 w-4" />
+                  {item.name}
+                </Link>
+              )
+            })}
+          </div>
         </nav>
 
-        {/* Bottom Status Bar */}
-        <div className="p-4 border-t border-slate-800/50">
-          <div className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-2xl p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-300 uppercase tracking-wide">System Status</span>
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-300"></div>
-                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-700"></div>
-              </div>
+        {/* Bottom actions */}
+        <div className="border-t border-zinc-800/50 p-4">
+          <Button 
+            size="sm" 
+            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            New Campaign
+          </Button>
+          
+          <div className="mt-4 rounded-md border border-zinc-800/50 bg-zinc-900/20 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Usage</span>
+              <span className="text-xs text-zinc-500">2.4k / 10k</span>
             </div>
-            
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="text-center">
-                <div className="font-bold text-white">3</div>
-                <div className="text-slate-400 font-mono">Sessions</div>
-              </div>
-              <div className="text-center">
-                <div className="font-bold text-white">1.2k</div>
-                <div className="text-slate-400 font-mono">Messages</div>
-              </div>
+            <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-full w-1/4 bg-emerald-500 rounded-full" />
             </div>
-            
-            <div className="text-center">
-              <div className="text-xs text-slate-400 font-mono">
-                Uptime: 99.9% • v2.1.0
-              </div>
-            </div>
+            <p className="mt-2 text-xs text-zinc-500">
+              Messages this month
+            </p>
           </div>
         </div>
       </div>

@@ -1,25 +1,18 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { Providers } from '@/components/providers-simple'
-import { AntiCache } from '@/components/anti-cache'
+import { ThemeProvider } from '@/components/providers/theme-provider'
 
-const inter = Inter({ subsets: ['latin'] })
-
-const buildTime = Date.now().toString()
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap'
+})
 
 export const metadata: Metadata = {
-  title: 'WhatsApp SaaS - Marketing Automation Platform',
-  description: 'Plataforma completa de automatización de WhatsApp para agencias de marketing',
-  keywords: 'WhatsApp, automation, marketing, SaaS, CRM',
-  other: {
-    'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
-    'Pragma': 'no-cache',
-    'Expires': '0',
-    'build-time': buildTime,
-    'cache-bust': Math.random().toString(),
-    'version': buildTime,
-  },
+  title: 'WhatsPower - WhatsApp Automation for Teams',
+  description: 'Professional WhatsApp automation platform with AI bots, campaigns, and real-time messaging for modern teams.',
+  keywords: 'WhatsApp automation, AI chatbots, business messaging, team collaboration',
 }
 
 export default function RootLayout({
@@ -28,14 +21,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <head>
-        <AntiCache />
-      </head>
-      <body className={inter.className}>
-        <Providers>
+    <html lang="en" suppressHydrationWarning className="dark">
+      <body className={`${inter.variable} font-sans antialiased bg-zinc-950 text-zinc-50`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
           {children}
-        </Providers>
+        </ThemeProvider>
       </body>
     </html>
   )
