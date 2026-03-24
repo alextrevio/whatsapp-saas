@@ -10,8 +10,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'WhatsPower - WhatsApp Automation for Teams',
-  description: 'Professional WhatsApp automation platform with AI bots, campaigns, and real-time messaging for modern teams.',
+  title: 'WhatsPower - WhatsApp Automation Platform',
+  description: 'Professional WhatsApp automation platform with AI bots, campaigns, and real-time messaging.',
   keywords: 'WhatsApp automation, AI chatbots, business messaging, team collaboration',
 }
 
@@ -21,11 +21,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
-      <body className={`${inter.variable} font-sans antialiased bg-zinc-950 text-zinc-50`}>
+    <html lang="en" suppressHydrationWarning className="light">
+      <body className={`${inter.variable} font-sans antialiased bg-slate-50 text-slate-900`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={false}
           disableTransitionOnChange
         >
