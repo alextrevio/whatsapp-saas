@@ -7,7 +7,7 @@ import {
   Menu,
   X,
   Sparkles,
-  Lightning,
+  Zap,
   Crown,
   Star
 } from 'lucide-react'
@@ -93,7 +93,7 @@ export function Header() {
                 <div className="relative flex items-center">
                   <Sparkles className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                   Comenzar Gratis
-                  <Lightning className="ml-2 h-4 w-4 text-yellow-300 group-hover:scale-110 transition-transform duration-300" />
+                  <Zap className="ml-2 h-4 w-4 text-yellow-300 group-hover:scale-110 transition-transform duration-300" />
                 </div>
               </Button>
             </Link>

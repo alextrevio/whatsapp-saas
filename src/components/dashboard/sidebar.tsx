@@ -22,7 +22,6 @@ import {
   Sparkles,
   Crown,
   Orbit,
-  Lightning,
   Shield,
   Star
 } from 'lucide-react'
@@ -73,7 +72,7 @@ const navigation = [
   {
     name: 'Automation',
     href: '/dashboard/automation',
-    icon: Lightning,
+    icon: Zap,
     color: 'from-orange-500 to-red-500',
     premium: true
   },

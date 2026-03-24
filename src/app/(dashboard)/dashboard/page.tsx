@@ -23,7 +23,6 @@ import {
   Globe,
   Orbit,
   Flame,
-  Lightning,
   Rocket,
   Crown,
   Star,
@@ -320,7 +319,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl">
-                <Lightning className="h-6 w-6 text-white" />
+                <Zap className="h-6 w-6 text-white" />
               </div>
               <div>
                 <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -548,7 +547,7 @@ export default function DashboardPage() {
                       <div className="relative flex items-center">
                         <Bot className="mr-3 h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
                         Configurar Bot IA
-                        <Lightning className="ml-3 h-5 w-5 text-yellow-300 group-hover:scale-110 transition-transform duration-300" />
+                        <Zap className="ml-3 h-5 w-5 text-yellow-300 group-hover:scale-110 transition-transform duration-300" />
                       </div>
                     </Button>
                   </Link>

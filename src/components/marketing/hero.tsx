@@ -5,11 +5,10 @@ import Link from 'next/link'
 import {
   Rocket,
   Sparkles,
-  Lightning,
+  Zap,
   Bot,
   MessageCircle,
   Users,
-  Zap,
   Crown,
   Star,
   ArrowRight,
@@ -26,7 +25,7 @@ import {
 const stats = [
   { number: '50K+', label: 'Mensajes/día', icon: MessageCircle },
   { number: '99.9%', label: 'Uptime', icon: Shield },
-  { number: '2.5s', label: 'Respuesta avg', icon: Lightning },
+  { number: '2.5s', label: 'Respuesta avg', icon: Zap },
   { number: '150+', label: 'Países', icon: Globe },
 ]
 

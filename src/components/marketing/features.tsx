@@ -10,7 +10,6 @@ import {
   Rocket,
   Crown,
   Star,
-  Lightning,
   Globe,
   Target,
   Sparkles,
@@ -42,7 +41,7 @@ const features = [
       {
         name: "Respuestas Instantáneas",
         description: "Menos de 2 segundos promedio. Tus clientes nunca esperan, tu negocio nunca para.",
-        icon: Lightning,
+        icon: Zap,
         color: "from-orange-500 to-red-500",
         premium: false
       }

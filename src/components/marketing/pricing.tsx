@@ -7,9 +7,8 @@ import {
   Check,
   Crown,
   Rocket,
-  Lightning,
-  Star,
   Zap,
+  Star,
   Shield,
   Sparkles,
   ArrowRight,
@@ -71,7 +70,7 @@ const plans = [
     tagline: "Para empresas grandes",
     price: { monthly: 199, yearly: 165 },
     description: "Solución completa para corporaciones y agencias",
-    icon: Lightning,
+    icon: Zap,
     color: "from-purple-500 to-pink-500",
     popular: false,
     features: [
@@ -233,7 +232,7 @@ export function Pricing() {
                           <>
                             <Rocket className="mr-2 h-5 w-5" />
                             Comenzar Ahora
-                            <Lightning className="ml-2 h-5 w-5 text-yellow-300" />
+                            <Zap className="ml-2 h-5 w-5 text-yellow-300" />
                           </>
                         ) : (
                           <>
