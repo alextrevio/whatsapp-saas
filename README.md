@@ -156,3 +156,24 @@ npm run build && npm start
 **Versión**: 1.0.0 - Uso Interno  
 **Última actualización**: 2024-03-24  
 **Desarrollado por**: Atlas 🏗️
+
+# WhatsApp SaaS - Professional Design
+
+Cyberpunk gaming aesthetic with glassmorphism effects.
+
+**Live Demo:** https://alextrevio.github.io/whatsapp-saas/
+
+## Features
+- Cyberpunk design system
+- Gaming-inspired UI
+- Glassmorphism effects
+- Mobile-first responsive
+- Professional landing page
+
+## Tech Stack
+- Next.js 14 App Router
+- TypeScript
+- Tailwind CSS
+- Shadcn/ui
+- Design skills: ui-ux-design, frontend-design-3, superdesign
+
