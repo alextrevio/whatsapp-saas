@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     const { data: whatsappSession, error } = await supabase
       .from('whatsapp_sessions')
       .insert({
-        sub_account_id: body.subAccountId, // Debería venir del contexto del usuario
+        user_id: session.user.id, // Usuario actual
         session_name: validatedData.sessionName,
         status: 'connecting',
         proxy_config: validatedData.proxyConfig || null
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
     // Inicializar sesión de WhatsApp
     try {
-      await whatsappManager.createSession(whatsappSession.id, body.subAccountId)
+      await whatsappManager.createSession(whatsappSession.id, session.user.id)
     } catch (whatsappError) {
       // Si falla la creación, eliminar de BD
       await supabase
