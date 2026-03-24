@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import type { Database } from '@/types/database.types'
+import type { Database } from '@/types/database-simple.types'
 
 // Cliente para uso en cliente
 export const supabase = createClient<Database>(

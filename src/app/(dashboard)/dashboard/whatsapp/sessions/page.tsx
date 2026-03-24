@@ -5,36 +5,40 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { QRModal } from '@/components/whatsapp/qr-modal'
 import { Plus, Smartphone, QrCode, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { useAuth } from '@/components/providers'
 
 interface WhatsAppSession {
   id: string
-  sessionName: string
+  session_name: string
   status: 'disconnected' | 'connecting' | 'connected' | 'error'
-  phoneNumber?: string
-  qrCode?: string
-  createdAt: string
+  phone_number?: string
+  qr_code?: string
+  created_at: string
 }
 
 export default function WhatsAppSessionsPage() {
+  const { user } = useAuth()
   const [sessions, setSessions] = useState<WhatsAppSession[]>([
     {
       id: '1',
-      sessionName: 'Ventas Principal',
+      session_name: 'Ventas Principal',
       status: 'connected',
-      phoneNumber: '+52 555-0123',
-      createdAt: '2024-01-15T10:30:00Z'
+      phone_number: '+52 555-0123',
+      created_at: '2024-01-15T10:30:00Z'
     },
     {
       id: '2', 
-      sessionName: 'Soporte Cliente',
+      session_name: 'Soporte Cliente',
       status: 'connecting',
-      createdAt: '2024-01-15T11:00:00Z'
+      created_at: '2024-01-15T11:00:00Z'
     }
   ])
   
   const [showNewSession, setShowNewSession] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
+  const [selectedQRSession, setSelectedQRSession] = useState<WhatsAppSession | null>(null)
 
   const getStatusIcon = (status: WhatsAppSession['status']) => {
     switch (status) {
@@ -72,26 +76,29 @@ export default function WhatsAppSessionsPage() {
   }
 
   const handleCreateSession = async () => {
-    if (!newSessionName.trim()) return
+    if (!newSessionName.trim() || !user) return
 
     const newSession: WhatsAppSession = {
       id: Date.now().toString(),
-      sessionName: newSessionName,
+      session_name: newSessionName,
       status: 'connecting',
-      createdAt: new Date().toISOString()
+      created_at: new Date().toISOString()
     }
 
     setSessions(prev => [...prev, newSession])
     setNewSessionName('')
     setShowNewSession(false)
 
-    // Simular proceso de conexión
+    // Simular proceso de conexión y mostrar QR
     setTimeout(() => {
       setSessions(prev => prev.map(session => 
         session.id === newSession.id 
-          ? { ...session, qrCode: 'data:image/png;base64,mock-qr-code' }
+          ? { ...session, qr_code: 'mock-qr-code-data' }
           : session
       ))
+      
+      // Abrir modal QR automáticamente
+      setSelectedQRSession(newSession)
     }, 1000)
   }
 
@@ -159,10 +166,10 @@ export default function WhatsAppSessionsPage() {
                 <div>
                   <CardTitle className="text-lg flex items-center">
                     <Smartphone className="h-5 w-5 mr-2" />
-                    {session.sessionName}
+                    {session.session_name}
                   </CardTitle>
                   <CardDescription className="mt-1">
-                    Creado: {new Date(session.createdAt).toLocaleDateString('es-ES')}
+                    Creado: {new Date(session.created_at).toLocaleDateString('es-ES')}
                   </CardDescription>
                 </div>
                 {getStatusIcon(session.status)}
@@ -174,22 +181,27 @@ export default function WhatsAppSessionsPage() {
                 {getStatusBadge(session.status)}
               </div>
 
-              {session.phoneNumber && (
+              {session.phone_number && (
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Teléfono:</span>
                   <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {session.phoneNumber}
+                    {session.phone_number}
                   </span>
                 </div>
               )}
 
-              {session.status === 'connecting' && session.qrCode && (
+              {session.status === 'connecting' && session.qr_code && (
                 <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 text-center">
                   <QrCode className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Escanea el código QR en tu WhatsApp
                   </p>
-                  <Button variant="outline" size="sm" className="mt-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-2"
+                    onClick={() => setSelectedQRSession(session)}
+                  >
                     Ver Código QR
                   </Button>
                 </div>
@@ -228,6 +240,16 @@ export default function WhatsAppSessionsPage() {
             </Button>
           </CardContent>
         </Card>
+      )}
+
+      {/* QR Modal */}
+      {selectedQRSession && (
+        <QRModal
+          sessionId={selectedQRSession.id}
+          sessionName={selectedQRSession.session_name}
+          isOpen={!!selectedQRSession}
+          onClose={() => setSelectedQRSession(null)}
+        />
       )}
     </div>
   )

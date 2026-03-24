@@ -36,7 +36,7 @@ export class WhatsAppManager {
     }
   }
 
-  async createSession(sessionId: string, subAccountId: string): Promise<void> {
+  async createSession(sessionId: string, userId: string): Promise<void> {
     if (this.sessions.has(sessionId)) {
       throw new Error('Session already exists')
     }
@@ -228,7 +228,7 @@ export class WhatsAppManager {
 
   private async handleIncomingMessage(
     sessionId: string,
-    subAccountId: string, 
+    userId: string, 
     message: any
   ): Promise<void> {
     try {
@@ -239,7 +239,6 @@ export class WhatsAppManager {
       let { data: contactData } = await supabaseAdmin
         .from('contacts')
         .select('id')
-        .eq('sub_account_id', subAccountId)
         .eq('phone_number', phoneNumber)
         .single()
 
@@ -247,7 +246,6 @@ export class WhatsAppManager {
         const { data: newContact } = await supabaseAdmin
           .from('contacts')
           .insert({
-            sub_account_id: subAccountId,
             phone_number: phoneNumber,
             name: contact.pushname || contact.name,
             tags: [],
@@ -268,7 +266,6 @@ export class WhatsAppManager {
       let { data: conversation } = await supabaseAdmin
         .from('conversations')
         .select('id')
-        .eq('sub_account_id', subAccountId)
         .eq('contact_id', contactData.id)
         .single()
 
@@ -276,7 +273,6 @@ export class WhatsAppManager {
         const { data: newConversation } = await supabaseAdmin
           .from('conversations')
           .insert({
-            sub_account_id: subAccountId,
             contact_id: contactData.id,
             whatsapp_session_id: sessionId,
             status: 'open'

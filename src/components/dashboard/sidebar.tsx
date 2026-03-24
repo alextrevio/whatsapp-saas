@@ -16,8 +16,6 @@ import {
   Zap,
   X,
   ChevronDown,
-  Building2,
-  CreditCard,
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -53,15 +51,13 @@ const navigation = [
   },
   { name: 'Analíticas', href: '/dashboard/analytics', icon: BarChart3 },
   { name: 'Automatización', href: '/dashboard/automation', icon: Zap },
-  { name: 'Agencia', href: '/dashboard/agency', icon: Building2 },
-  { name: 'Facturación', href: '/dashboard/billing', icon: CreditCard },
+
   {
     name: 'Configuración',
     icon: Settings,
     children: [
       { name: 'Organización', href: '/dashboard/settings/organization' },
-      { name: 'Personalización', href: '/dashboard/settings/branding' },
-      { name: 'API Keys', href: '/dashboard/settings/api-keys' },
+
       { name: 'Integraciones', href: '/dashboard/settings/integrations' },
     ]
   },

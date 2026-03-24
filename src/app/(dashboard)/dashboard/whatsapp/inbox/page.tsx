@@ -28,9 +28,6 @@ type Conversation = Database['public']['Tables']['conversations']['Row'] & {
 }
 
 export default function InboxPage() {
-  // Mock sub-account ID - en producción vendrá del contexto
-  const subAccountId = 'mock-sub-account-id'
-  
   const {
     conversations,
     selectedConversation,
@@ -38,7 +35,7 @@ export default function InboxPage() {
     loading,
     selectConversation,
     sendMessage,
-  } = useConversations({ subAccountId })
+  } = useConversations({})
 
   const [newMessage, setNewMessage] = useState('')
   const [searchQuery, setSearchQuery] = useState('')

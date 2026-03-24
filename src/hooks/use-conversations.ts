@@ -11,10 +11,10 @@ type Conversation = Database['public']['Tables']['conversations']['Row'] & {
 }
 
 interface UseConversationsProps {
-  subAccountId: string
+  // No longer need subAccountId for single tenant
 }
 
-export function useConversations({ subAccountId }: UseConversationsProps) {
+export function useConversations({}: UseConversationsProps) {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
@@ -25,7 +25,7 @@ export function useConversations({ subAccountId }: UseConversationsProps) {
   const loadConversations = useCallback(async () => {
     try {
       setLoading(true)
-      const data = await realtimeClient.getConversations(subAccountId)
+      const data = await realtimeClient.getConversations()
       setConversations(data)
       setError(null)
     } catch (err) {
@@ -34,7 +34,7 @@ export function useConversations({ subAccountId }: UseConversationsProps) {
     } finally {
       setLoading(false)
     }
-  }, [subAccountId])
+  }, [])
 
   // Cargar mensajes de una conversación
   const loadMessages = useCallback(async (conversationId: string) => {
